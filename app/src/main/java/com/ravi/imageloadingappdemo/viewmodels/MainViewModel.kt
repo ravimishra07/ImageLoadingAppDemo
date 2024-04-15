@@ -21,28 +21,28 @@ class MainViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
-    var imageResponse: MutableLiveData<NetworkResult<List<ImageDto>>> = MutableLiveData()
+   // var imageResponse: MutableLiveData<NetworkResult<List<ImageDto>>> = MutableLiveData()
 
-    fun getMovies(query: String) = viewModelScope.launch {
-        getImagesSafeCall(Repository.DEFAULT_PAGE_INDEX)
-    }
+//    fun getMovies(query: String) = viewModelScope.launch {
+//        getImagesSafeCall(Repository.DEFAULT_PAGE_INDEX)
+//    }
 
     @ExperimentalPagingApi
     fun fetchImages(): Flow<PagingData<ImageDto>> {
         return repository.loadImageFlow().cachedIn(viewModelScope)
     }
 
-    private suspend fun getImagesSafeCall(page: Int) {
-        imageResponse.value = NetworkResult.Loading()
-        try {
-            val response = repository.remote.getImages(page)
-            imageResponse.value = handleImageResponse(response)
-
-        } catch (e: Exception) {
-            imageResponse.value = NetworkResult.Error("Images not found." + e.localizedMessage)
-        }
-
-    }
+//    private suspend fun getImagesSafeCall(page: Int) {
+//        imageResponse.value = NetworkResult.Loading()
+//        try {
+//            val response = repository.remote.getImages(page)
+//            imageResponse.value = handleImageResponse(response)
+//
+//        } catch (e: Exception) {
+//            imageResponse.value = NetworkResult.Error("Images not found." + e.localizedMessage)
+//        }
+//
+//    }
 
     private fun handleImageResponse(response: Response<List<ImageDto>>): NetworkResult<List<ImageDto>> {
         when {

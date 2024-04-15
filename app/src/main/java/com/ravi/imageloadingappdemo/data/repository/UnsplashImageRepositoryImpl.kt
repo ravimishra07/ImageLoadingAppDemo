@@ -1,7 +1,6 @@
 package com.ravi.imageloadingappdemo.data.repository
 
 import com.ravi.imageloadingappdemo.data.UnsplashImageRepository
-import com.ravi.imageloadingappdemo.data.local.ImageDao
 import com.ravi.imageloadingappdemo.data.remote.UnsplashApi
 import com.ravi.imageloadingappdemo.model.ImageData
 import com.ravi.imageloadingappdemo.util.Resource
@@ -13,9 +12,7 @@ import java.net.HttpURLConnection
 import javax.inject.Inject
 
 class UnsplashImageRepositoryImpl @Inject constructor(
-    private val api: UnsplashApi,
-    private val dao: ImageDao
-) : UnsplashImageRepository {
+    private val api: UnsplashApi) : UnsplashImageRepository {
 
     override fun getImages(accessKey: String, pageNum: Int)
             : Flow<Resource<List<ImageData>>> = flow {
