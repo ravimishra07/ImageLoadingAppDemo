@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.ravi.imageloadingappdemo.model.MainData
 import com.ravi.imageloadingappdemo.util.NetworkResult
-import com.ravi.locodemo.data.Repository
+import com.ravi.imageloadingappdemo.data.repository.Repository
+import com.ravi.imageloadingappdemo.model.ImageDto
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -21,30 +21,30 @@ class MainViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
-    var imageResponse: MutableLiveData<NetworkResult<MainData>> = MutableLiveData()
+    var imageResponse: MutableLiveData<NetworkResult<List<ImageDto>>> = MutableLiveData()
 
     fun getMovies(query: String) = viewModelScope.launch {
-        getMoviesSafeCall(query, Repository.DEFAULT_PAGE_INDEX)
+        getImagesSafeCall(Repository.DEFAULT_PAGE_INDEX)
     }
 
     @ExperimentalPagingApi
-    fun fetchImages(): Flow<PagingData<MainData>> {
+    fun fetchImages(): Flow<PagingData<ImageDto>> {
         return repository.loadImageFlow().cachedIn(viewModelScope)
     }
 
-    private suspend fun getMoviesSafeCall(query: String, page: Int) {
+    private suspend fun getImagesSafeCall(page: Int) {
         imageResponse.value = NetworkResult.Loading()
         try {
-            val response = repository.remote.getMovies(query, page)
+            val response = repository.remote.getImages(page)
             imageResponse.value = handleImageResponse(response)
 
         } catch (e: Exception) {
-            imageResponse.value = NetworkResult.Error("Movies not found." + e.localizedMessage)
+            imageResponse.value = NetworkResult.Error("Images not found." + e.localizedMessage)
         }
 
     }
 
-    private fun handleImageResponse(response: Response<MainData>): NetworkResult<MainData> {
+    private fun handleImageResponse(response: Response<List<ImageDto>>): NetworkResult<List<ImageDto>> {
         when {
             response.message().toString().contains("timeout") -> {
                 return NetworkResult.Error("Timeout")
@@ -54,7 +54,7 @@ class MainViewModel @Inject constructor(
                 return NetworkResult.Error("API Key Limited.")
             }
 
-            response.body()?.list.isNullOrEmpty() -> {
+            response.body()?.isEmpty() == true -> {
                 return NetworkResult.Error("No not found.")
             }
 //

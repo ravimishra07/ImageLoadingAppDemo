@@ -8,29 +8,30 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ravi.imageloadingappdemo.databinding.MoviesRowLayoutBinding
 import com.ravi.imageloadingappdemo.model.ImageData
+import com.ravi.imageloadingappdemo.model.ImageDto
 
 
 import com.ravi.imageloadingappdemo.util.Constants
 
-class ImageAdapter : PagingDataAdapter<ImageData, RecyclerView.ViewHolder>(REPO_COMPARATOR) {
+class ImageAdapter : PagingDataAdapter<ImageDto, RecyclerView.ViewHolder>(REPO_COMPARATOR) {
     companion object {
-        private val REPO_COMPARATOR = object : DiffUtil.ItemCallback<ImageData>() {
-            override fun areItemsTheSame(oldItem: ImageData, newItem: ImageData) =
-                oldItem.url == newItem.url
+        private val REPO_COMPARATOR = object : DiffUtil.ItemCallback<ImageDto>() {
+            override fun areItemsTheSame(oldItem: ImageDto, newItem: ImageDto) =
+                oldItem.id == newItem.id
 
-            override fun areContentsTheSame(oldItem: ImageData, newItem: ImageData) =
-                oldItem.url == newItem.url
+            override fun areContentsTheSame(oldItem: ImageDto, newItem: ImageDto) =
+                oldItem.id == newItem.id
         }
     }
 
 
     class ListViewHolder(private val binding: MoviesRowLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(movie: ImageData) {
+        fun bind(movie: ImageDto) {
             Log.v("MoviesAdapter", movie.toString())
-            binding.tvMovieTitle.text = movie.url
-            binding.tvMovieType.text = movie.url
-            binding.tvYear.text = movie.url
+            binding.tvMovieTitle.text = movie.altDescription
+            binding.tvMovieType.text = movie.altDescription
+            binding.tvYear.text = movie.blurHash
 //            Glide.with(binding.root.context)
 //                .load(movie.poster)
 //                .placeholder(R.drawable.placeholder_img)
@@ -45,7 +46,7 @@ class ImageAdapter : PagingDataAdapter<ImageData, RecyclerView.ViewHolder>(REPO_
             }
         }
     }
-    
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
       return ListViewHolder.from(parent)

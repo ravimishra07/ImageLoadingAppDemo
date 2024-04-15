@@ -34,8 +34,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var mainViewModel: MainViewModel
     private val mAdapter by lazy { ImageAdapter() }
-
-
     private var searchJob: Job? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,7 +97,5 @@ class MainActivity : AppCompatActivity() {
     private fun showLoader() {
         binding.mainProgressbar.visibility = View.VISIBLE
     }
-
-
 }
 

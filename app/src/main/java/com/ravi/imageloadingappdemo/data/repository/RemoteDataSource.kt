@@ -1,20 +1,16 @@
 package com.ravi.imageloadingappdemo.data.repository
 
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import androidx.paging.PagingSource
-import com.ravi.locodemo.model.Movie
-import com.ravi.locodemo.model.SearchData
-import com.ravi.locodemo.util.Constants.Companion.API_KEY
-import kotlinx.coroutines.flow.Flow
+import android.media.Image
+import com.ravi.imageloadingappdemo.data.remote.UnsplashApi
+import com.ravi.imageloadingappdemo.model.ImageDto
+import com.ravi.imageloadingappdemo.util.Constants.Companion.API_KEY
 import retrofit2.Response
 import javax.inject.Inject
 
 class RemoteDataSource @Inject constructor(
-     val api: RetrofitApi
+     val api: UnsplashApi
     ) {
-    suspend fun getMovies(searchKey:String,page:Int): Response<SearchData> {
-        return api.getSearchResult(API_KEY,searchKey,page)
+    suspend fun getImages(page:Int): Response<List<ImageDto>> {
+        return api.getUnsplashImages(API_KEY,page)
     }
 }

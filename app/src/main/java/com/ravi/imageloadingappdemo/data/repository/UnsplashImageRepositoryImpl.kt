@@ -22,12 +22,12 @@ class UnsplashImageRepositoryImpl @Inject constructor(
 
         emit(Resource.Loading<List<ImageData>>())
 
-        val cachedList = dao.fetchImagesForPage(pageNum)
-        emit(Resource.Loading(data = cachedList))
+//        val cachedList = dao.fetchImagesForPage(pageNum)
+//        emit(Resource.Loading(data = cachedList))
 
         try {
             val imageList = api.getUnsplashImages(accessKey, pageNum)
-            dao.addImages(imageList.map { it.toImageData().also { data -> data.pageNum = pageNum } })
+         //   dao.addImages(imageList.map { it.toImageData().also { data -> data.pageNum = pageNum } })
         } catch (e: HttpException) {
             if (e.response()?.code() == HttpURLConnection.HTTP_UNAUTHORIZED)
                 emit(Resource.Error<List<ImageData>>("Check your API Key"))
@@ -37,7 +37,7 @@ class UnsplashImageRepositoryImpl @Inject constructor(
             emit(Resource.Error<List<ImageData>>("Please check you internet connection!"))
         }
 
-        val newImages = dao.fetchImagesForPage(pageNum)
-        emit(Resource.Success(data = newImages))
+//        val newImages = dao.fetchImagesForPage(pageNum)
+//        emit(Resource.Success(data = newImages))
     }
 }

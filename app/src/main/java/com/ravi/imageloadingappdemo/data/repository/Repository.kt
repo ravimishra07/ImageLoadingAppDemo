@@ -1,11 +1,11 @@
-package com.ravi.locodemo.data
+package com.ravi.imageloadingappdemo.data.repository
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.ravi.imageloadingappdemo.data.repository.RemoteDataSource
-import com.ravi.imageloadingappdemo.model.MainData
+import com.ravi.imageloadingappdemo.data.ImagePagingSource
+import com.ravi.imageloadingappdemo.model.ImageDto
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -24,10 +24,10 @@ class Repository @Inject constructor(
     }
 
     @ExperimentalPagingApi
-    fun loadImageFlow(pagingConfig: PagingConfig = getDefaultPageConfig(), query:String): Flow<PagingData<MainData>> {
+    fun loadImageFlow(pagingConfig: PagingConfig = getDefaultPageConfig()): Flow<PagingData<ImageDto>> {
         return Pager(
             config = pagingConfig,
-            pagingSourceFactory = { MoviePagingSource(remote.api,query) }
+            pagingSourceFactory = { ImagePagingSource(remote.api) }
         ).flow
     }
 }

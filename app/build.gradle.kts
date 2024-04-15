@@ -60,9 +60,9 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
 //    // Dagger - Hilt
-    implementation ("com.google.dagger:hilt-android:2.40.5")
+    implementation ("com.google.dagger:hilt-android:2.50")
   //  kapt ("com.google.dagger:hilt-android-compiler:2.36")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.50")
 
     //   Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
@@ -79,8 +79,8 @@ dependencies {
     implementation("androidx.paging:paging-runtime-ktx:3.2.1")
 
     // Room
-    implementation("androidx.room:room-runtime:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-runtime:2.5.0")
+    kapt("androidx.room:room-compiler:2.5.0")
     implementation ("androidx.room:room-ktx:2.6.1")
 
     testImplementation("junit:junit:4.13.2")
