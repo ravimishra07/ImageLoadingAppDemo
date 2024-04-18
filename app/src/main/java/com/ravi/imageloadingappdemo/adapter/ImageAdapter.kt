@@ -37,8 +37,13 @@ class ImageAdapter(val memoryCache: LruCache<String, Bitmap>) :
 
         fun bind(imageModel: ImageDto) {
             Log.v("MoviesAdapter", imageModel.toString())
-            binding.movieImage.setImageResource(R.drawable.ic_grid)
-            imageModel.urls.thumb?.let {
+           val text = if(imageModel.description.isNullOrEmpty()){
+                imageModel.altDescription
+            }else{
+                imageModel.description
+            }
+            binding.title.text = text
+            imageModel.urls.regular?.let {
                 CoroutineScope(Dispatchers.IO).launch {
                     val processImageObject = imageModel.urls.small?.let { it1 -> ProcessImage(it1) }
 
@@ -48,7 +53,7 @@ class ImageAdapter(val memoryCache: LruCache<String, Bitmap>) :
                         layoutPosition
                     )
                     withContext(Dispatchers.Main){
-                        binding.movieImage.setImageBitmap(userBitmap)
+                        binding.ivImage.setImageBitmap(userBitmap)
                     }
                 }
             }

@@ -27,7 +27,7 @@
            >
 
             <ImageView
-                android:id="@+id/movie_image"
+                android:id="@+id/ivImage"
                 android:layout_width="120dp"
                 android:layout_height="0dp"
                 android:maxHeight="120dp"
@@ -50,7 +50,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/movie_image"
+                app:layout_constraintStart_toEndOf="@+id/ivImage"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
