@@ -1,6 +1,8 @@
 package com.ravi.imageloadingappdemo
 
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.LruCache
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -18,17 +20,20 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+
 @ExperimentalPagingApi
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var mainViewModel: MainViewModel
-    private val mAdapter by lazy { ImageAdapter() }
+    private val mAdapter by lazy { memoryCache?.let { ImageAdapter(it) } }
+    private var memoryCache: LruCache<String, Bitmap>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        initCache()
         setupRecyclerView()
         getImageData()
     }
@@ -36,18 +41,18 @@ class MainActivity : AppCompatActivity() {
     private fun getImageData() {
         lifecycleScope.launch {
             mainViewModel.fetchImages().collectLatest {
-                mAdapter.submitData(it)
+                mAdapter?.submitData(it)
             }
         }
     }
 
     private fun setupRecyclerView() {
 
-        binding.rvMovies.adapter = mAdapter.withLoadStateHeaderAndFooter(
+        binding.rvMovies.adapter = mAdapter?.withLoadStateHeaderAndFooter(
             header = LoaderStateAdapter(),
             footer = LoaderStateAdapter()
         )
-        mAdapter.addLoadStateListener { loadState ->
+        mAdapter?.addLoadStateListener { loadState ->
             binding.rvMovies.isVisible = loadState.refresh is LoadState.NotLoading
             binding.mainProgressbar.isVisible = loadState.refresh is LoadState.Loading
             val errorState = loadState.source.append as? LoadState.Error
@@ -62,12 +67,20 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
         }
-        binding.rvMovies.layoutManager = GridLayoutManager(this, 2)
+        binding.rvMovies.layoutManager = GridLayoutManager(this, 1)
         showLoader()
     }
 
     private fun showLoader() {
         binding.mainProgressbar.visibility = View.VISIBLE
+    }
+
+    fun initCache() {
+        val maxMemory: Int = (Runtime.getRuntime().maxMemory() / 1024).toInt()
+        val cacheSize = maxMemory / 8
+        memoryCache = object : LruCache<String, Bitmap>(cacheSize) {
+            override fun sizeOf(key: String?, bitmap: Bitmap) = bitmap.byteCount / 1024
+        }
     }
 }
 

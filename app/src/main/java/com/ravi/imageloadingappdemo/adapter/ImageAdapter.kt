@@ -1,19 +1,27 @@
 package com.ravi.imageloadingappdemo.adapter
 
+
+import android.graphics.Bitmap
 import android.util.Log
+import android.util.LruCache
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.ravi.imageloadingappdemo.databinding.MoviesRowLayoutBinding
-import com.ravi.imageloadingappdemo.model.ImageData
+import com.ravi.imageloadingappdemo.R
+import com.ravi.imageloadingappdemo.databinding.MoviesRowGridLayoutBinding
 import com.ravi.imageloadingappdemo.model.ImageDto
+import com.ravi.imageloadingappdemo.util.ProcessImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
-import com.ravi.imageloadingappdemo.util.Constants
-
-class ImageAdapter : PagingDataAdapter<ImageDto, RecyclerView.ViewHolder>(REPO_COMPARATOR) {
+class ImageAdapter(val memoryCache: LruCache<String, Bitmap>) :
+    PagingDataAdapter<ImageDto, RecyclerView.ViewHolder>(REPO_COMPARATOR) {
     companion object {
         private val REPO_COMPARATOR = object : DiffUtil.ItemCallback<ImageDto>() {
             override fun areItemsTheSame(oldItem: ImageDto, newItem: ImageDto) =
@@ -24,32 +32,32 @@ class ImageAdapter : PagingDataAdapter<ImageDto, RecyclerView.ViewHolder>(REPO_C
         }
     }
 
+    inner class ListViewHolder(private val binding: MoviesRowGridLayoutBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-    class ListViewHolder(private val binding: MoviesRowLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(imageModel: ImageDto) {
+            Log.v("MoviesAdapter", imageModel.toString())
+            binding.movieImage.setImageResource(R.drawable.ic_grid)
+            imageModel.urls.thumb?.let {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val processImageObject = imageModel.urls.small?.let { it1 -> ProcessImage(it1) }
 
-        fun bind(movie: ImageDto) {
-            Log.v("MoviesAdapter", movie.toString())
-            binding.tvMovieTitle.text = movie.altDescription
-            binding.tvMovieType.text = movie.altDescription
-            binding.tvYear.text = movie.blurHash
-//            Glide.with(binding.root.context)
-//                .load(movie.poster)
-//                .placeholder(R.drawable.placeholder_img)
-//                .into(binding.movieImage)
-        }
-
-        companion object {
-            fun from(parent: ViewGroup): ListViewHolder {
-                val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = MoviesRowLayoutBinding.inflate(layoutInflater, parent, false)
-                return ListViewHolder(binding)
+                    val userBitmap = processImageObject?.getBitmapFromURL(
+                        processImageObject.imageUrl,
+                        memoryCache,
+                        layoutPosition
+                    )
+                    withContext(Dispatchers.Main){
+                        binding.movieImage.setImageBitmap(userBitmap)
+                    }
+                }
             }
         }
     }
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-      return ListViewHolder.from(parent)
+        val binding = MoviesRowGridLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ListViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
